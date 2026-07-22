@@ -1,0 +1,95 @@
+# Copy to config.toml and fill in real values. config.toml is gitignored
+# because it carries the BlueBubbles server password and the owner's
+# iMessage handles.
+
+[owner]
+# Who this assistant belongs to. `name` is how the owner's turns are
+# labelled in the transcript, and it is substituted into the prompt
+# footers the worker builds. `handles` is every iMessage address that
+# counts as the owner — phone in +1XXXXXXXXXX form and/or Apple ID email;
+# list both if both are used. A message from any sender NOT in `handles`
+# is dropped at the webhook, before the worker ever sees it. Leaving
+# `handles` empty accepts every sender — read the security section of the
+# README before doing that: the worker runs `claude` with
+# --dangerously-skip-permissions.
+name    = "Your Name"
+handles = ["+15551234567", "you@example.com"]
+
+[bluebubbles]
+# The BlueBubbles server on this Mac. Default install port is 1234 —
+# check the BlueBubbles server UI if you changed it.
+server_url  = "http://127.0.0.1:1234"
+# The BlueBubbles server password — the same one set in the BlueBubbles
+# server UI. Lives here (not an env var) so all secrets sit in one
+# gitignored file.
+password    = "REPLACE-ME"
+# How replies are sent. "apple-script" works with no extra setup;
+# "private-api" needs BlueBubbles' Private API enabled but behaves better
+# (typing indicators, tapbacks).
+send_method = "apple-script"
+
+[webhook]
+# webhook.py listens here. 127.0.0.1 keeps it host-local — the
+# BlueBubbles server runs on the same Mac, so it can still reach it.
+host = "127.0.0.1"
+port = 8788
+
+[worker]
+poll_interval_s          = 1.0      # how often pa.py checks the queue
+context_budget_tokens    = 250000   # transcript size that counts as "full"
+invocation_timeout_s     = 900      # true-hang backstop only — real tasks
+                                    # take minutes; progress pings cover the
+                                    # wait, so this stays generous
+progress_first_ping_s    = 120      # first "still working" ping at 2 min
+progress_ping_interval_s = 300      # then another every 5 min
+model                    = ""       # blank = Claude Code's default model
+
+[paths]
+# `claude -p` runs with this as its working directory. Point it at
+# whatever tree the assistant is allowed to read — its notes, its project
+# files. Everything under it is reachable by the agent, so choose
+# deliberately.
+workspace_root = "/path/to/your/workspace"
+
+[watcher]
+# All optional — the watcher is an add-on, not required for the message
+# loop.
+#
+# chat_guid: the chat the watcher reaches the owner on for proactive
+# outreach. Leave blank to auto-target the most recently active thread
+# (the usual case).
+chat_guid    = ""
+# notify_bin: optional path to a push-notification CLI, invoked as
+#   <bin> <topic> "<title>" "<message>" --priority <p> --tag lautrec
+# (an ntfy or Pushcut wrapper, say). Leave blank to skip the push and let
+# the iMessage outreach be the only surface.
+notify_bin   = ""
+notify_topic = "lautrec"
+
+[caldav]
+# Calendar WRITES (calctl add) go over CalDAV. Reads still use the local
+# Calendar DB (calctl today/week/…), which needs no creds. iCloud and Google
+# are CalDAV; Microsoft/Outlook is NOT (would need Graph API, not supported
+# here). `username` = your Apple ID email (NOT necessarily your primary email
+# — it's whatever email is registered as your Apple ID). `password` = an
+# app-specific password from appleid.apple.com › Sign-In & Security ›
+# App-Specific Passwords. Gitignored secret. url defaults to iCloud.
+url      = "https://caldav.icloud.com"
+username = "REPLACE-ME@example.com"
+password = "REPLACE-ME"
+
+[fastmail]
+# Personal mail read/send via JMAP (skills/mail.md). Create a token in
+# Fastmail: Settings › Privacy & Security › Connected apps & API tokens →
+# new API token, scope "Mail". The JMAP session endpoint is
+# https://api.fastmail.com/jmap/session. Gitignored secret.
+api_token = "REPLACE-ME"
+
+[gmail]
+# Read-only Gmail via IMAP + a Google App Password (needs 2FA, and App
+# Passwords allowed by the Workspace admin; create at
+# myaccount.google.com › Security › App passwords). If the admin blocks
+# App Passwords, Gmail needs the OAuth path instead, which is not
+# implemented here. Gitignored secret. `mailctl <cmd> --account work`.
+address      = "REPLACE-ME@example.com"
+app_password = "REPLACE-ME"

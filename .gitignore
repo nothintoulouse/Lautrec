@@ -1,0 +1,32 @@
+# Secrets — the real BlueBubbles password lives here.
+config.toml
+
+# Personal, not the project's: the live system prompt and the live work
+# manifest. Both ship as *.example.md templates instead.
+persona.md
+manifest.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Runtime state — created at startup by webhook.py / pa.py / watcher.py.
+# Transient message queue, private conversation transcripts, daily logs,
+# and the watcher's fire-once de-dupe ledger.
+queue/
+threads/
+logs/
+.watcher-state.json
+
+# calctl build artifacts (binary installed to ~/.local/bin)
+tools/calctl/dist/
+tools/calctl/build/
+tools/calctl/spec/
+
+tools/contactctl/dist/
+tools/contactctl/build/
+tools/contactctl/spec/
+
+tools/mailctl/dist/
+tools/mailctl/build/

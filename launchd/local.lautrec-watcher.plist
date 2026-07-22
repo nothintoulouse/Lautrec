@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Placeholders {{PYTHON}} {{PROJECT_ROOT}} {{HOME}} are substituted by
+     launchd/install.sh. Do not load this template directly.
+
+     This is a PERIODIC job, not a daemon: watcher.py ticks once and exits.
+     StartInterval=60 reruns it every 60s; no KeepAlive (a tick-and-exit
+     process under KeepAlive would relaunch in a tight loop). RunAtLoad
+     fires the first tick at boot. Dormancy is handled inside the tick
+     (zero Active manifest entries → immediate exit), so this stays loaded
+     always — that is the design. PATH must include `tmux` and `notify`. -->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.lautrec-watcher</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>{{PYTHON}}</string>
+        <string>{{PROJECT_ROOT}}/watcher.py</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{{PROJECT_ROOT}}</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StartInterval</key>
+    <integer>60</integer>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>{{HOME}}/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>{{HOME}}</string>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>{{PROJECT_ROOT}}/logs/watcher.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{PROJECT_ROOT}}/logs/watcher.err.log</string>
+</dict>
+</plist>

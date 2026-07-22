@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Placeholders {{PYTHON}} {{PROJECT_ROOT}} {{HOME}} are substituted by
+     launchd/install.sh. Do not load this template directly.
+     PATH must include the directory holding the `claude` binary.
+
+     The `env -u CLAUDE_CODE_OAUTH_TOKEN` wrapper is load-bearing if you have
+     ever exported a Claude Code *setup token*. A setup token is inference-only
+     (no user:profile scope), and when it is present Claude Code prefers it over
+     the full-scope account credentials in ~/.claude/.credentials.json — so a
+     worker that inherits one loses features and can donate that degraded
+     environment to other sessions on the box. launchd's gui/<uid> domain can
+     hold the variable from an old `launchctl setenv`, and a plist cannot unset
+     an inherited variable, so it is scrubbed here at exec. Harmless if you
+     never had one set. -->
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>local.lautrec-worker</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/env</string>
+        <string>-u</string>
+        <string>CLAUDE_CODE_OAUTH_TOKEN</string>
+        <string>{{PYTHON}}</string>
+        <string>{{PROJECT_ROOT}}/pa.py</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>{{PROJECT_ROOT}}</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>{{HOME}}/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+        <key>HOME</key>
+        <string>{{HOME}}</string>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>{{PROJECT_ROOT}}/logs/worker.out.log</string>
+    <key>StandardErrorPath</key>
+    <string>{{PROJECT_ROOT}}/logs/worker.err.log</string>
+</dict>
+</plist>
