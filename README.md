@@ -1,5 +1,9 @@
 # Lautrec
 
+> **PAUSED — indefinitely, as of 2026-09-14.** No transport is running.
+> This project is not currently maintained; treat everything below as a
+> description of a system that is not live.
+
 A personal assistant you reach by texting it. An iMessage arrives, a
 BlueBubbles webhook spools it to disk, a single-threaded worker runs one
 `claude -p` invocation against the conversation transcript, and the reply
